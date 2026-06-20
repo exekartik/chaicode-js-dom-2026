@@ -84,21 +84,128 @@
  *   // => <div class="booking-summary">...</div>
  */
 export function validateName(name) {
-  // Your code here
+  if (typeof name !== 'string') {
+    return { valid: false, error: "Naam string hona chahiye" };
+  }
+  if (name.length < 2) {
+    return { valid: false, error: "Naam mein kam se kam 2 characters hone chahiye" };
+  }
+  if (name.length > 50) {
+    return { valid: false, error: "Naam 50 characters se zyada nahi ho sakta" };
+  }
+  if (!/^[a-zA-Z\s]+$/.test(name)) {
+    return { valid: false, error: "Naam mein sirf letters aur spaces allowed hain" };
+  }
+  return { valid: true, error: null };
 }
 
 export function validateDate(dateString) {
-  // Your code here
+  if (typeof dateString !== 'string') {
+    return { valid: false, error: "Date string honi chahiye" };
+  }
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!regex.test(dateString)) {
+    return { valid: false, error: "Date YYYY-MM-DD format mein honi chahiye" };
+  }
+  const parts = dateString.split('-');
+  const y = parseInt(parts[0], 10);
+  const m = parseInt(parts[1], 10);
+  const d = parseInt(parts[2], 10);
+  if (m < 1 || m > 12 || d < 1 || d > 31) {
+    return { valid: false, error: "Date YYYY-MM-DD format mein honi chahiye" };
+  }
+  const tempDate = new Date(y, m - 1, d);
+  if (tempDate.getFullYear() !== y || tempDate.getMonth() !== m - 1 || tempDate.getDate() !== d) {
+    return { valid: false, error: "Date YYYY-MM-DD format mein honi chahiye" };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (tempDate.getTime() < today.getTime()) {
+    return { valid: false, error: "Date aaj ya future ki honi chahiye" };
+  }
+
+  return { valid: true, error: null };
 }
 
 export function validateAartiType(type) {
-  // Your code here
+  if (typeof type !== 'string') {
+    return { valid: false, error: "Aarti type string hona chahiye" };
+  }
+  const validTypes = ["morning", "evening", "special"];
+  if (!validTypes.includes(type)) {
+    return { valid: false, error: "Aarti type morning, evening, ya special mein se hona chahiye" };
+  }
+  return { valid: true, error: null };
 }
 
 export function setupAartiForm(formElement, onSuccess, onError) {
-  // Your code here
+  if (!formElement || typeof onSuccess !== 'function' || typeof onError !== 'function') {
+    return null;
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const name = formElement.elements.name ? formElement.elements.name.value : '';
+    const date = formElement.elements.date ? formElement.elements.date.value : '';
+    const aartiType = formElement.elements.aartiType ? formElement.elements.aartiType.value : '';
+
+    const nameVal = validateName(name);
+    const dateVal = validateDate(date);
+    const aartiVal = validateAartiType(aartiType);
+
+    const errors = [];
+    if (!nameVal.valid) {
+      errors.push(nameVal.error);
+    }
+    if (!dateVal.valid) {
+      errors.push(dateVal.error);
+    }
+    if (!aartiVal.valid) {
+      errors.push(aartiVal.error);
+    }
+
+    if (errors.length > 0) {
+      onError(errors);
+    } else {
+      onSuccess({ name, date, aartiType });
+    }
+  };
+
+  formElement.addEventListener('submit', handleSubmit);
+  return () => {
+    formElement.removeEventListener('submit', handleSubmit);
+  };
 }
 
 export function createBookingSummary(booking) {
-  // Your code here
+  if (!booking || !booking.name || !booking.date || !booking.aartiType) {
+    return null;
+  }
+
+  const div = document.createElement('div');
+  div.classList.add('booking-summary');
+
+  const h3 = document.createElement('h3');
+  h3.textContent = 'Booking Confirmation';
+  div.appendChild(h3);
+
+  const pName = document.createElement('p');
+  pName.classList.add('booking-name');
+  pName.textContent = `Bhakt: ${booking.name}`;
+  div.appendChild(pName);
+
+  const pDate = document.createElement('p');
+  pDate.classList.add('booking-date');
+  pDate.textContent = `Date: ${booking.date}`;
+  div.appendChild(pDate);
+
+  const pType = document.createElement('p');
+  pType.classList.add('booking-type');
+  pType.textContent = `Aarti: ${booking.aartiType}`;
+  div.appendChild(pType);
+
+  return div;
 }
+

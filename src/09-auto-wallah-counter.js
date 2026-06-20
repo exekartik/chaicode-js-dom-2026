@@ -87,29 +87,92 @@
  *   // => { total: 2, waiting: 1, serving: 1, completed: 0 }
  */
 export function findQueueContainer(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  return element.closest('.queue-container');
 }
 
 export function getNextInQueue(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  return element.nextElementSibling;
 }
 
 export function getPreviousInQueue(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  return element.previousElementSibling;
 }
 
 export function getQueuePosition(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return -1;
+  }
+  const parent = element.parentNode;
+  if (!parent) {
+    return -1;
+  }
+  const children = Array.from(parent.children);
+  const index = children.indexOf(element);
+  return index === -1 ? -1 : index + 1;
 }
 
 export function moveToFront(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return false;
+  }
+  const parent = element.parentNode;
+  if (!parent) {
+    return false;
+  }
+  if (parent.firstElementChild === element) {
+    return false;
+  }
+  parent.insertBefore(element, parent.firstElementChild);
+  return true;
 }
 
 export function removeFromQueue(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  const parent = element.parentNode;
+  if (!parent) {
+    return null;
+  }
+  parent.removeChild(element);
+  return element;
 }
 
 export function getQueueStats(queueContainer) {
-  // Your code here
+  if (!queueContainer || !(queueContainer instanceof HTMLElement)) {
+    return null;
+  }
+  const children = Array.from(queueContainer.children);
+  let waiting = 0;
+  let serving = 0;
+  let completed = 0;
+
+  children.forEach(child => {
+    if (child.classList.contains('waiting')) {
+      waiting++;
+    }
+    if (child.classList.contains('serving')) {
+      serving++;
+    }
+    if (child.classList.contains('completed')) {
+      completed++;
+    }
+  });
+
+  return {
+    total: children.length,
+    waiting,
+    serving,
+    completed
+  };
 }
+

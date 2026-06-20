@@ -90,25 +90,90 @@
  *   // => [pandal1, pandal3] (elements with data-zone="North")
  */
 export function createPandalElement(pandal) {
-  // Your code here
+  if (!pandal || !pandal.name || typeof pandal.name !== 'string' ||
+      !pandal.zone || typeof pandal.zone !== 'string' ||
+      !pandal.theme || typeof pandal.theme !== 'string' ||
+      typeof pandal.budget !== 'number' || isNaN(pandal.budget) ||
+      typeof pandal.rating !== 'number' || isNaN(pandal.rating)) {
+    return null;
+  }
+  const div = document.createElement('div');
+  div.classList.add('pandal');
+  div.dataset.name = pandal.name;
+  div.dataset.zone = pandal.zone;
+  div.dataset.theme = pandal.theme;
+  div.dataset.budget = String(pandal.budget);
+  div.dataset.rating = String(pandal.rating);
+  div.textContent = pandal.name;
+  return div;
 }
 
 export function getPandalInfo(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  return {
+    name: element.dataset.name,
+    zone: element.dataset.zone,
+    theme: element.dataset.theme,
+    budget: Number(element.dataset.budget),
+    rating: Number(element.dataset.rating)
+  };
 }
 
 export function updatePandalRating(element, newRating) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  if (typeof newRating !== 'number' || isNaN(newRating) || newRating < 0 || newRating > 5) {
+    return null;
+  }
+  const old = Number(element.dataset.rating);
+  element.dataset.rating = String(newRating);
+  return isNaN(old) ? null : old;
 }
 
 export function filterPandalsByZone(container, zone) {
-  // Your code here
+  if (!container || !(container instanceof HTMLElement)) {
+    return [];
+  }
+  if (typeof zone !== 'string') {
+    return [];
+  }
+  const children = Array.from(container.children);
+  return children.filter(child => child.classList.contains('pandal') && child.dataset.zone === zone);
 }
 
 export function getPandalsByBudgetRange(container, min, max) {
-  // Your code here
+  if (!container || !(container instanceof HTMLElement)) {
+    return [];
+  }
+  if (typeof min !== 'number' || isNaN(min) || typeof max !== 'number' || isNaN(max)) {
+    return [];
+  }
+  const children = Array.from(container.children);
+  return children.filter(child => {
+    if (!child.classList.contains('pandal')) {
+      return false;
+    }
+    const budget = Number(child.dataset.budget);
+    return budget >= min && budget <= max;
+  });
 }
 
 export function sortPandalsByRating(container) {
-  // Your code here
+  if (!container || !(container instanceof HTMLElement)) {
+    return [];
+  }
+  const children = Array.from(container.children).filter(child => child.classList.contains('pandal'));
+  children.sort((a, b) => {
+    const rA = Number(a.dataset.rating) || 0;
+    const rB = Number(b.dataset.rating) || 0;
+    return rB - rA;
+  });
+  children.forEach(child => {
+    container.appendChild(child);
+  });
+  return children;
 }
+

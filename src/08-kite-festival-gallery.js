@@ -79,21 +79,94 @@
  *   // => 1 (only red kites shown)
  */
 export function renderKiteCard(kite) {
-  // Your code here
+  if (!kite || !kite.name || !kite.color || !kite.size || !kite.maker || !kite.image) {
+    return null;
+  }
+  const card = document.createElement('div');
+  card.classList.add('kite-card');
+
+  const img = document.createElement('img');
+  img.src = kite.image;
+  img.alt = kite.name;
+  card.appendChild(img);
+
+  const h3 = document.createElement('h3');
+  h3.classList.add('kite-name');
+  h3.textContent = kite.name;
+  card.appendChild(h3);
+
+  const pMaker = document.createElement('p');
+  pMaker.classList.add('kite-maker');
+  pMaker.textContent = `by ${kite.maker}`;
+  card.appendChild(pMaker);
+
+  const pInfo = document.createElement('p');
+  pInfo.classList.add('kite-info');
+  pInfo.textContent = `${kite.size} - ${kite.color}`;
+  card.appendChild(pInfo);
+
+  return card;
 }
 
 export function renderGallery(container, kites) {
-  // Your code here
+  if (!container || !(container instanceof HTMLElement)) {
+    return -1;
+  }
+  if (!Array.isArray(kites)) {
+    return -1;
+  }
+  container.innerHTML = '';
+  let count = 0;
+  kites.forEach(k => {
+    const card = renderKiteCard(k);
+    if (card) {
+      container.appendChild(card);
+      count++;
+    }
+  });
+  return count;
 }
 
 export function filterKites(container, kites, filterFn) {
-  // Your code here
+  if (!container || !(container instanceof HTMLElement)) {
+    return -1;
+  }
+  if (!Array.isArray(kites) || typeof filterFn !== 'function') {
+    return -1;
+  }
+  const filtered = kites.filter(filterFn);
+  return renderGallery(container, filtered);
 }
 
-export function sortAndRender(container, kites, sortField, order) {
-  // Your code here
+export function sortAndRender(container, kites, sortField, order = 'asc') {
+  if (!container || !(container instanceof HTMLElement)) {
+    return [];
+  }
+  if (!Array.isArray(kites)) {
+    return [];
+  }
+  const copy = [...kites];
+  const multiplier = order === 'desc' ? -1 : 1;
+  copy.sort((a, b) => {
+    const valA = a[sortField] !== undefined ? String(a[sortField]) : '';
+    const valB = b[sortField] !== undefined ? String(b[sortField]) : '';
+    return valA.localeCompare(valB) * multiplier;
+  });
+  renderGallery(container, copy);
+  return copy;
 }
 
 export function renderEmptyState(container, message) {
-  // Your code here
+  if (!container || !(container instanceof HTMLElement)) {
+    return false;
+  }
+  if (container.children.length === 0) {
+    const p = document.createElement('p');
+    p.classList.add('empty-state');
+    p.textContent = message;
+    container.appendChild(p);
+    return true;
+  }
+  return false;
 }
+

@@ -70,25 +70,73 @@
  *   // => ["red", "blue"]
  */
 export function addColors(element, ...colors) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return -1;
+  }
+  let count = 0;
+  for (const color of colors) {
+    if (color && !element.classList.contains(color)) {
+      element.classList.add(color);
+      count++;
+    }
+  }
+  return count;
 }
 
 export function removeColors(element, ...colors) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return -1;
+  }
+  let count = 0;
+  for (const color of colors) {
+    if (color && element.classList.contains(color)) {
+      element.classList.remove(color);
+      count++;
+    }
+  }
+  return count;
 }
 
 export function togglePattern(element, pattern) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return null;
+  }
+  const className = `pattern-${pattern}`;
+  element.classList.toggle(className);
+  return element.classList.contains(className);
 }
 
 export function hasDesign(element, designName) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return false;
+  }
+  return element.classList.contains(`design-${designName}`);
 }
 
 export function replaceDesign(element, oldDesign, newDesign) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return false;
+  }
+  const oldClass = `design-${oldDesign}`;
+  const newClass = `design-${newDesign}`;
+  const hasOld = element.classList.contains(oldClass);
+  if (hasOld) {
+    element.classList.remove(oldClass);
+  }
+  element.classList.add(newClass);
+  return hasOld;
 }
 
 export function getActiveColors(element) {
-  // Your code here
+  if (!element || !(element instanceof HTMLElement)) {
+    return [];
+  }
+  const colors = [];
+  element.classList.forEach(cls => {
+    if (cls.startsWith('color-')) {
+      colors.push(cls.slice(6));
+    }
+  });
+  return colors;
 }
+

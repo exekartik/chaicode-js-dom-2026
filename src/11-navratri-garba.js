@@ -89,25 +89,80 @@
  *   // => deep clone of stage with id "stage-clone"
  */
 export function insertDancer(stage, newDancer, referenceDancer) {
-  // Your code here
+  if (!stage || !newDancer || !(stage instanceof HTMLElement) || !(newDancer instanceof HTMLElement)) {
+    return false;
+  }
+  stage.insertBefore(newDancer, referenceDancer || null);
+  return true;
 }
 
 export function cloneDancer(dancer, deep) {
-  // Your code here
+  if (!dancer || !(dancer instanceof HTMLElement)) {
+    return null;
+  }
+  const clone = dancer.cloneNode(deep);
+  if (clone.id) {
+    clone.id = `${clone.id}-copy`;
+  }
+  return clone;
 }
 
 export function replaceDancer(stage, oldDancer, newDancer) {
-  // Your code here
+  if (!stage || !oldDancer || !newDancer ||
+      !(stage instanceof HTMLElement) || !(oldDancer instanceof HTMLElement) || !(newDancer instanceof HTMLElement)) {
+    return null;
+  }
+  if (oldDancer.parentNode !== stage) {
+    return null;
+  }
+  stage.replaceChild(newDancer, oldDancer);
+  return oldDancer;
 }
 
 export function removeDancer(stage, dancer) {
-  // Your code here
+  if (!stage || !dancer || !(stage instanceof HTMLElement) || !(dancer instanceof HTMLElement)) {
+    return null;
+  }
+  if (dancer.parentNode !== stage) {
+    return null;
+  }
+  stage.removeChild(dancer);
+  return dancer;
 }
 
 export function rearrangeStage(stage, order) {
-  // Your code here
+  if (!stage || !(stage instanceof HTMLElement)) {
+    return false;
+  }
+  if (!Array.isArray(order)) {
+    return false;
+  }
+  const children = Array.from(stage.children);
+  if (order.length !== children.length) {
+    return false;
+  }
+  for (const idx of order) {
+    if (typeof idx !== 'number' || idx < 0 || idx >= children.length || isNaN(idx)) {
+      return false;
+    }
+  }
+
+  const orderedChildren = order.map(idx => children[idx]);
+  stage.innerHTML = '';
+  orderedChildren.forEach(child => {
+    stage.appendChild(child);
+  });
+  return true;
 }
 
 export function duplicateFormation(stage) {
-  // Your code here
+  if (!stage || !(stage instanceof HTMLElement)) {
+    return null;
+  }
+  const clone = stage.cloneNode(true);
+  if (clone.id) {
+    clone.id = `${clone.id}-clone`;
+  }
+  return clone;
 }
+
